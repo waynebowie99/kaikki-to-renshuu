@@ -1,9 +1,7 @@
-﻿// See https://aka.ms/new-console-template for more information
-using kaikki_to_renshuu;
+﻿using kaikki_to_renshuu;
 using Newtonsoft.Json;
 using System.Data;
 using System.Globalization;
-using System.Text.RegularExpressions;
 
 CultureInfo.CurrentCulture = new CultureInfo("ja-JP", false);
 
