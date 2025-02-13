@@ -38,7 +38,7 @@ foreach (var line in File.ReadAllLines(path))
         continue;
     }
 
-    foreach (var form in word.forms)
+    foreach (var form in word.forms.Where(e => e.raw_tags?.Any() != true))
     {
         (string kana, string kanji) = (form.form, word.word);
         var kanjiChars = GetCharsInRange(form.form, 0x4E00, 0x9FBF);
@@ -51,13 +51,31 @@ foreach (var line in File.ReadAllLines(path))
             kanji = form.form;
             kana = word.word;
         }
-
-        conversion.Add(new RenshuuRoot
+        var renshuuRoot = new RenshuuRoot
         {
             Kana = kana,
             Kanji = kanji,
-            Senses = word.senses.SelectMany(s => s.glosses).Where(e => e.Contains(kana)).ToList()
-        });
+            Senses = word.senses.Length == 1 ? word.senses[0].glosses.ToList() : word.senses.Where(e => e.form_of?.Any(e => e.word == kana) == true).SelectMany(e => e.glosses).ToList()
+        };
+
+        if(renshuuRoot.Senses.Count == 0)
+        {
+            renshuuRoot.Senses = word.senses.SelectMany(e => e.glosses).Where(e => e.Contains(kana)).ToList();
+        }
+
+        if(renshuuRoot.Senses.Count == 0)
+        {
+            renshuuRoot.Senses = word.senses.SelectMany(e => e.glosses).Where(e => e.Contains(kanji)).ToList();
+        }
+
+        if(renshuuRoot.Senses.Count == 0)
+        {
+            renshuuRoot.Senses = word.senses.SelectMany(e => e.glosses).ToList();
+        }
+
+        renshuuRoot.Senses = renshuuRoot.Senses.Distinct().ToList();
+
+        conversion.Add(renshuuRoot);
     }
 }
 
