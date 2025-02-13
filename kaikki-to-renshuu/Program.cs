@@ -23,6 +23,8 @@ if(string.IsNullOrWhiteSpace(exportPath))
     return;
 }
 
+var japanConverter = new KawazuConverter();
+
 List<RenshuuRoot> conversion = [];
 
 foreach (var line in File.ReadAllLines(path))
@@ -60,7 +62,8 @@ foreach (var line in File.ReadAllLines(path))
 
         if(renshuuRoot.Senses.Count == 0)
         {
-            renshuuRoot.Senses = word.senses.SelectMany(e => e.glosses).Where(e => e.Contains(kana)).ToList();
+            var convertedKana = GetCharsInRange(form.form, 0x3040, 0x309F).Count() > 0 ? await japanConverter.Convert(kana, To.Katakana) : await japanConverter.Convert(kana, To.Hiragana);
+            renshuuRoot.Senses = word.senses.SelectMany(e => e.glosses).Where(e => e.Contains(kana) || e.Contains(convertedKana)).ToList();
         }
 
         if(renshuuRoot.Senses.Count == 0)

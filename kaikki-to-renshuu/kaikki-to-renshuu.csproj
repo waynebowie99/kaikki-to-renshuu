@@ -9,6 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Kawazu" Version="1.1.4" />
+    <PackageReference Include="LibNMeCab.IpaDicBin" Version="0.10.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
